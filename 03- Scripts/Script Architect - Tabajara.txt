@@ -1,0 +1,118 @@
+
+CREATE SEQUENCE public.dim_funcionario_sk_funcionario_seq;
+
+CREATE TABLE public.dim_funcionario (
+                sk_funcionario INTEGER NOT NULL DEFAULT nextval('public.dim_funcionario_sk_funcionario_seq'),
+                nk_funcionario INTEGER NOT NULL,
+                nm_funcionario VARCHAR(20) NOT NULL,
+                etl_dt_inicio TIMESTAMP NOT NULL,
+                etl_dt_fim TIMESTAMP NOT NULL,
+                versao INTEGER NOT NULL,
+                CONSTRAINT dim_funcionario_pk PRIMARY KEY (sk_funcionario)
+);
+
+
+ALTER SEQUENCE public.dim_funcionario_sk_funcionario_seq OWNED BY public.dim_funcionario.sk_funcionario;
+
+CREATE TABLE public.dim_data (
+                sk_data INTEGER NOT NULL,
+                nk_data DATE NOT NULL,
+                desc_data_completa VARCHAR(60) NOT NULL,
+                nr_ano INTEGER NOT NULL,
+                nm_trimestre VARCHAR(20) NOT NULL,
+                nr_ano_trimestre VARCHAR(20) NOT NULL,
+                nr_mes INTEGER NOT NULL,
+                nm_mes VARCHAR(20) NOT NULL,
+                ano_mes VARCHAR(20) NOT NULL,
+                nr_semana INTEGER NOT NULL,
+                ano_semana VARCHAR(20) NOT NULL,
+                nr_dia INTEGER NOT NULL,
+                nr_dia_ano INTEGER NOT NULL,
+                nm_dia_semana VARCHAR(20) NOT NULL,
+                flag_final_semana CHAR(3) NOT NULL,
+                flag_feriado CHAR(3) NOT NULL,
+                nm_feriado VARCHAR(60) NOT NULL,
+                etl_dt_inicio TIMESTAMP NOT NULL,
+                etl_dt_fim TIMESTAMP NOT NULL,
+                versao INTEGER NOT NULL,
+                CONSTRAINT dim_data_pk PRIMARY KEY (sk_data)
+);
+
+
+CREATE SEQUENCE public.dim_produto_sk_produto_seq;
+
+CREATE TABLE public.dim_produto (
+                sk_produto INTEGER NOT NULL DEFAULT nextval('public.dim_produto_sk_produto_seq'),
+                nk_produto INTEGER NOT NULL,
+                descricao_produto VARCHAR(15) NOT NULL,
+                marca_produto VARCHAR(20) NOT NULL,
+                preco_produto REAL NOT NULL,
+                nm_produto VARCHAR(20) NOT NULL,
+                modelo VARCHAR(15) NOT NULL,
+                etl_dt_inicio TIMESTAMP NOT NULL,
+                etl_dt_fim TIMESTAMP NOT NULL,
+                versao INTEGER NOT NULL,
+                CONSTRAINT dim_produto_pk PRIMARY KEY (sk_produto)
+);
+
+
+ALTER SEQUENCE public.dim_produto_sk_produto_seq OWNED BY public.dim_produto.sk_produto;
+
+CREATE SEQUENCE public.dim_cliente_sk_cliente_seq;
+
+CREATE TABLE public.dim_cliente (
+                sk_cliente INTEGER NOT NULL DEFAULT nextval('public.dim_cliente_sk_cliente_seq'),
+                nk_cliente INTEGER NOT NULL,
+                tel_cli CHAR(11) NOT NULL,
+                bairro VARCHAR(20) NOT NULL,
+                nm_cliente VARCHAR(20) NOT NULL,
+                estado_cli VARCHAR(20) NOT NULL,
+                data_nascimento DATE NOT NULL,
+                municipio VARCHAR(20) NOT NULL,
+                sexo_cli CHAR(1) NOT NULL,
+                etl_dt_inicio TIMESTAMP NOT NULL,
+                etl_dt_fim TIMESTAMP NOT NULL,
+                versao INTEGER NOT NULL,
+                CONSTRAINT dim_cliente_pk PRIMARY KEY (sk_cliente)
+);
+
+
+ALTER SEQUENCE public.dim_cliente_sk_cliente_seq OWNED BY public.dim_cliente.sk_cliente;
+
+CREATE TABLE public.fato_venda (
+                sk_data INTEGER NOT NULL,
+                sk_produto INTEGER NOT NULL,
+                sk_cliente INTEGER NOT NULL,
+                forma_pagamento VARCHAR(15) NOT NULL,
+                dt_venda DATE NOT NULL,
+                sk_funcionario INTEGER NOT NULL
+);
+
+
+ALTER TABLE public.fato_venda ADD CONSTRAINT dim_funcionario_fato_venda_fk
+FOREIGN KEY (sk_funcionario)
+REFERENCES public.dim_funcionario (sk_funcionario)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.fato_venda ADD CONSTRAINT dim_data_fato_venda_fk
+FOREIGN KEY (sk_data)
+REFERENCES public.dim_data (sk_data)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.fato_venda ADD CONSTRAINT dim_produto_fato_venda_fk
+FOREIGN KEY (sk_produto)
+REFERENCES public.dim_produto (sk_produto)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.fato_venda ADD CONSTRAINT dim_cliente_fato_venda_fk
+FOREIGN KEY (sk_cliente)
+REFERENCES public.dim_cliente (sk_cliente)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
